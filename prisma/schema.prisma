@@ -6,3 +6,85 @@ datasource db {
 generator client {
     provider = "prisma-client-js"
 }
+
+model Restaurant {
+    id          Int                    @id @default(autoincrement())
+    name        String                 @unique
+    address     String
+    website     String
+    description String
+    price       Float
+    dishes      Dish[]
+    reviews     Review[]
+    likedBy     LikedRestaurants[]
+    categories  RestaurantToCategory[]
+}
+
+model LikedRestaurants {
+    id           Int        @id @default(autoincrement())
+    customer     Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+    restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    customerId   Int
+    restaurantId Int
+}
+
+model Dish {
+    id           Int          @id @default(autoincrement())
+    name         String
+    price        Float
+    description  String
+    isMain       Boolean
+    restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    restaurantId Int
+    category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    categoryId   Int
+    dishReviews  DishReview[]
+
+    @@unique([name, restaurantId])
+}
+
+model Category {
+    id          Int                    @id @default(autoincrement())
+    name        String                 @unique
+    dishes      Dish[]
+    restaurants RestaurantToCategory[]
+}
+
+model RestaurantToCategory {
+    id           Int        @id @default(autoincrement())
+    restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    restaurantId Int
+    categoryId   Int
+}
+
+model Customer {
+    id               Int                @id @default(autoincrement())
+    name             String
+    email            String             @unique
+    password         String
+    reviews          Review[]
+    likedRestaurants LikedRestaurants[]
+}
+
+model Review {
+    id           Int          @id @default(autoincrement())
+    text         String
+    score        Int          @db.SmallInt
+    createdAt    DateTime     @default(now())
+    restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+    restaurantId Int
+    customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+    customerId   Int
+    dishReviews  DishReview[]
+}
+
+model DishReview {
+    id       Int    @id @default(autoincrement())
+    score    Int    @db.SmallInt
+    comment  String
+    review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+    reviewId Int
+    dish     Dish   @relation(fields: [dishId], references: [id], onDelete: Cascade)
+    dishId   Int
+}

@@ -8,7 +8,9 @@ import { ThemeProvider } from "@material-tailwind/react";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ThemeProvider>
-      <Component {...pageProps} />
+      <main className="grid min-h-[140px] w-full place-items-center rounded-lg p-6">
+        <Component {...pageProps} />
+      </main>
     </ThemeProvider>
   );
 };

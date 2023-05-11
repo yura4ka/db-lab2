@@ -9,7 +9,7 @@ import { useCustomRouter } from "~/hooks/useCustomRouter";
 import { api } from "~/utils/api";
 import { validString } from "~/utils/schemas";
 
-const Restaurant: NextPage = () => {
+const ChangeCategory: NextPage = () => {
   const { id, isCreate, push, justCreated } = useCustomRouter();
 
   const [name, setName] = useState("");
@@ -109,4 +109,4 @@ const Restaurant: NextPage = () => {
     </>
   );
 };
-export default Restaurant;
+export default ChangeCategory;

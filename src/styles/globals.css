@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 body,
-body > div {
+body > div:first-child {
   height: 100vh;
 }

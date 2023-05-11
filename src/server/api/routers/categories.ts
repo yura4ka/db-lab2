@@ -25,6 +25,14 @@ export const categoriesRouter = createTRPCRouter({
         WHERE id = ${input.id};`;
       return true;
     }),
+  remove: publicProcedure
+    .input(validId)
+    .mutation(async ({ ctx, input: id }) => {
+      await ctx.prisma.$executeRaw`
+        DELETE FROM "Category"
+        WHERE id = ${id};`;
+      return true;
+    }),
   getById: publicProcedure.input(validId).query(({ ctx, input: id }) => {
     return ctx.prisma.$queryRaw<[Category]>`
       SELECT * FROM "Category" 

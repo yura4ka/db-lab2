@@ -9,7 +9,7 @@ const MainHeader = ({ children }: Props) => {
       variant="h1"
       color="blue"
       textGradient
-      className="pb-8 text-center"
+      className="flex items-center justify-center gap-6 pb-8"
     >
       {children}
     </Typography>

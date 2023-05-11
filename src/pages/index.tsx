@@ -1,12 +1,4 @@
-import {
-  Accordion,
-  AccordionBody,
-  AccordionHeader,
-  Card,
-  List,
-  ListItem,
-  Typography,
-} from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import HomeCard from "~/components/HomeCard";
@@ -51,8 +43,8 @@ const Home: NextPage = () => {
         <HomeCard
           label="Категорії"
           links={[
-            { text: "Список", href: "users" },
-            { text: "Створити", href: "users/create" },
+            { text: "Список", href: "categories" },
+            { text: "Створити", href: "categories/create" },
           ]}
         />
         <HomeCard

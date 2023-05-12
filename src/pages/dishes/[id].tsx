@@ -214,7 +214,7 @@ const ChangeDish: NextPage = () => {
               isError={createDish.isError}
             />
             <CustomInput
-              label="Ціна"
+              label="Ціна у $ "
               type="number"
               min={0}
               value={form.price}

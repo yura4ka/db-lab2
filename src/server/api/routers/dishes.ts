@@ -47,8 +47,8 @@ export const dishesRouter = createTRPCRouter({
     return result.map((r) => formatDishResult(r));
   }),
   create: publicProcedure.input(dishSchema).mutation(async ({ ctx, input }) => {
-    const id = await ctx.prisma.$queryRaw<[{ id: number }]>`
-      INSERT INTO "Dish" (name, price, description, isMain, restaurantId, categoryId)
+    const [{ id }] = await ctx.prisma.$queryRaw<[{ id: number }]>`
+      INSERT INTO "Dish" (name, price, description, "isMain", "restaurantId", "categoryId")
       VALUES (${input.name}, ${input.price}, ${input.description}, ${input.isMain}, ${input.restaurantId}, ${input.categoryId})
       RETURNING id`;
     return id;
@@ -58,7 +58,7 @@ export const dishesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$executeRaw`
         UPDATE "Dish"
-        SET name = ${input.name}, price = ${input.price}, description = ${input.description}, isMain = ${input.isMain}, restaurantId = ${input.restaurantId}, categoryId = ${input.categoryId} 
+        SET name = ${input.name}, price = ${input.price}, description = ${input.description}, "isMain" = ${input.isMain}, "restaurantId" = ${input.restaurantId}, "categoryId" = ${input.categoryId} 
         WHERE id = ${input.id}
       `;
       return true;

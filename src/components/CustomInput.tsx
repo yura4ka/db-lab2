@@ -25,13 +25,16 @@ const CustomInput: FC<Props> = ({
     try {
       validationSchema?.parse(e.target.value);
       const validation = validationFunction?.(e.target.value);
-      if (typeof validation === "string") setError(validation);
-      else if (validation === false) setError("");
-      else setError(null);
-      onValidation?.(typeof validation === "string" || !validation);
+      if (typeof validation === "string" || validation === false) {
+        setError(validation || "Error!");
+        onValidation?.(true);
+      } else {
+        setError(null);
+        onValidation?.(false);
+      }
     } catch (e) {
       if (e instanceof ZodError) {
-        setError(e.flatten().formErrors[0] || "");
+        setError(e.flatten().formErrors[0] || "Error!");
         onValidation?.(true);
       }
     }
@@ -61,17 +64,16 @@ const CustomInput: FC<Props> = ({
           {label}
         </label>
       </div>
-
-      <Typography
-        variant="small"
-        color="red"
-        className={`mt-2 flex items-center gap-1 font-normal ${
-          error ? "opacity-100" : "select-none opacity-0"
-        }`}
-      >
-        <InformationCircleIcon className="-mt-px h-4 w-4" />
-        {error || 0}
-      </Typography>
+      {error && (
+        <Typography
+          variant="small"
+          color="red"
+          className={`font-normal} mt-1 flex items-center gap-1`}
+        >
+          <InformationCircleIcon className="-mt-px h-4 w-4" />
+          {error}
+        </Typography>
+      )}
     </div>
   );
 };

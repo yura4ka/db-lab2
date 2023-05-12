@@ -1,4 +1,4 @@
-import type { Restaurant } from "@prisma/client";
+import { Prisma, type Restaurant } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -20,34 +20,39 @@ export const restaurantsRouter = createTRPCRouter({
   create: publicProcedure
     .input(restaurantSchema)
     .mutation(async ({ ctx, input }) => {
-      const [{ id }] = await ctx.prisma.$queryRaw<[{ id: number }]>`
-        INSERT INTO "Restaurant" (name, address, website, description, price)
-        VALUES (${input.name}, ${input.address}, ${input.website}, ${input.description}, ${input.price})
-        RETURNING id;`;
-
-      await ctx.prisma.$executeRaw`
-        INSERT INTO "RestaurantToCategory" (restaurantId, categoryId)
-        VALUES ${input.categories.map((c) => `(${id}, ${c})`).join(", ")}`;
-      return id;
+      return await ctx.prisma.$transaction(async (tx) => {
+        const [{ id }] = await tx.$queryRaw<[{ id: number }]>`
+          INSERT INTO "Restaurant" (name, address, website, description, price)
+          VALUES (${input.name}, ${input.address}, ${input.website}, ${input.description}, ${input.price})
+          RETURNING id;`;
+        await tx.$executeRaw(Prisma.sql`
+          INSERT INTO "RestaurantToCategory" ("restaurantId", "categoryId")
+          VALUES ${Prisma.join(
+            input.categories.map((c) => Prisma.sql`(${Prisma.join([id, c])})`)
+          )};`);
+        return id;
+      });
     }),
   update: publicProcedure
     .input(restaurantSchema.extend({ id: validId }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.$executeRaw`
-        DELETE FROM "RestaurantToCategory"
-        WHERE restaurantId = ${input.id};`;
-
-      await ctx.prisma.$executeRaw`
-        UPDATE "Restaurant"
-        SET name = ${input.name}, address = ${input.address}, website = ${input.website}, 
-            description = ${input.description} price = ${input.price} 
-        WHERE restaurantId = ${input.id};`;
-
-      await ctx.prisma.$executeRaw`
-        INSERT INTO "RestaurantToCategory" (restaurantId, categoryId)
-        VALUES ${input.categories
-          .map((c) => `(${input.id}, ${c})`)
-          .join(", ")};`;
+      await ctx.prisma.$transaction([
+        ctx.prisma.$executeRaw`
+          DELETE FROM "RestaurantToCategory"
+          WHERE "restaurantId" = ${input.id};`,
+        ctx.prisma.$executeRaw`
+          UPDATE "Restaurant"
+          SET name = ${input.name}, address = ${input.address}, website = ${input.website}, 
+              description = ${input.description}, price = ${input.price} 
+          WHERE id = ${input.id};`,
+        ctx.prisma.$executeRaw(Prisma.sql`
+          INSERT INTO "RestaurantToCategory" ("restaurantId", "categoryId")
+          VALUES ${Prisma.join(
+            input.categories.map(
+              (c) => Prisma.sql`(${Prisma.join([input.id, c])})`
+            )
+          )};`),
+      ]);
 
       return true;
     }),

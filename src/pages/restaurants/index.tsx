@@ -81,7 +81,7 @@ const Restaurants: NextPage = () => {
                 />
               </TableCell>
               <TableCell>
-                <EditRow href={`categories/${r.id}`} content="Редагувати" />
+                <EditRow href={`restaurants/${r.id}`} content="Редагувати" />
                 <RemoveRow
                   content="Видалити"
                   onClick={() =>

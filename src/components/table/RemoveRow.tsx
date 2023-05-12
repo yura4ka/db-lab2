@@ -11,7 +11,7 @@ export const RemoveRow: React.FC<Props> = ({ content, ...props }) => {
       {...props}
       variant="text"
       color="red"
-      className="inline-flex items-center gap-2"
+      className="inline-flex items-center gap-2 px-3"
     >
       <TrashIcon strokeWidth={2} className="h-5 w-5" />
       {content}

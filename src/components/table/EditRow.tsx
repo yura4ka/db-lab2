@@ -13,7 +13,7 @@ export const EditRow = ({ content, href }: Props) => {
       <Button
         variant="text"
         color="blue"
-        className="inline-flex items-center gap-2"
+        className="inline-flex items-center gap-2 px-3"
       >
         <PencilIcon strokeWidth={2} className="h-5 w-5" />
         {content}

@@ -61,7 +61,7 @@ export const restaurantsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input: id }) => {
       await ctx.prisma.$executeRaw`
         DELETE FROM "Restaurant" 
-        WHERE restaurantId = ${id};`;
+        WHERE id = ${id};`;
       return true;
     }),
   getById: publicProcedure.input(validId).query(async ({ ctx, input: id }) => {

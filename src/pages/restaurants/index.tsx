@@ -1,71 +1,104 @@
-import { Typography } from "@material-tailwind/react";
-import { type NextPage } from "next";
+import { PlusIcon } from "@heroicons/react/24/solid";
+import { IconButton, Rating, Typography } from "@material-tailwind/react";
+import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
+import MainHeader from "~/components/MainHeader";
+import { useModal } from "~/components/modal";
+import ConfirmModal from "~/components/modal/ConfirmModal";
+import { CurrencyDollarIcon as Rated } from "@heroicons/react/24/solid";
+import { CurrencyDollarIcon as Unrated } from "@heroicons/react/24/outline";
+import {
+  EditRow,
+  HeadCell,
+  RemoveRow,
+  Table,
+  TableCell,
+} from "~/components/table";
 import { api } from "~/utils/api";
 
 const Restaurants: NextPage = () => {
   const { data: restaurants } = api.restaurants.get.useQuery();
-  const TABLE_HEAD: string[] = [];
+  const removeRestaurant = api.restaurants.remove.useMutation();
+  const apiUtils = api.useContext();
+
+  const { modalProps, toggleModal } = useModal();
+
+  const handleRemove = (id: number) => {
+    removeRestaurant.mutate(id, {
+      onSuccess: () => {
+        apiUtils.restaurants.get.setData(undefined, (old) =>
+          old ? old.filter((r) => r.id !== id) : old
+        );
+      },
+    });
+  };
 
   return (
     <>
       <Head>
         <title>Ресторани</title>
       </Head>
-      <Typography
-        variant="h1"
-        color="blue"
-        textGradient
-        className="pb-8 text-center"
-      >
+      <MainHeader>
         Ресторани
-      </Typography>
-      <table className="w-full min-w-max table-auto text-left">
+        <Link href="restaurants/create" className="flex items-center">
+          <IconButton variant="gradient" ripple={true}>
+            <PlusIcon className="h-6 w-6" />
+          </IconButton>
+        </Link>
+      </MainHeader>
+      <Table>
         <thead>
           <tr>
-            {TABLE_HEAD.map((head) => (
-              <th
-                key={head}
-                className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-              >
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                >
-                  {head}
-                </Typography>
-              </th>
-            ))}
+            <HeadCell>Назва</HeadCell>
+            <HeadCell>Адреса</HeadCell>
+            <HeadCell>Сайт</HeadCell>
+            <HeadCell>Опис</HeadCell>
+            <HeadCell>Ціна</HeadCell>
+            <HeadCell>Дії</HeadCell>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y">
           {(restaurants || []).map((r) => (
             <tr key={r.id}>
-              <td className="pb-4">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {r.name}
+              <TableCell>{r.name}</TableCell>
+              <TableCell>{r.address}</TableCell>
+              <TableCell>
+                <Typography color="blue" className="hover:text-blue-700">
+                  <a href={r.website}>Відкрити</a>
                 </Typography>
-              </td>
-              <td className="pb-4">
-                <Typography
-                  href="#"
-                  variant="small"
-                  color="blue"
-                  className="font-medium"
-                >
-                  Edit
-                </Typography>
-              </td>
+              </TableCell>
+              <TableCell className="max-w-md">
+                <p className="line-clamp-2">{r.description}</p>
+              </TableCell>
+              <TableCell>
+                <Rating
+                  value={r.price}
+                  readonly={true}
+                  ratedColor="green"
+                  ratedIcon={<Rated className="h-6 w-6" />}
+                  unratedIcon={<Unrated className="h-6 w-6" />}
+                />
+              </TableCell>
+              <TableCell>
+                <EditRow href={`categories/${r.id}`} content="Редагувати" />
+                <RemoveRow
+                  content="Видалити"
+                  onClick={() =>
+                    toggleModal({
+                      text: `видалити ресторан ${r.name}`,
+                      onConfirm: () => handleRemove(r.id),
+                    })
+                  }
+                />
+              </TableCell>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
+      <ConfirmModal {...modalProps} />
     </>
   );
 };
+
 export default Restaurants;

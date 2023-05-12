@@ -1,13 +1,14 @@
 import { Typography } from "@material-tailwind/react";
+import type { TdHTMLAttributes } from "react";
 
-type Props = {
+interface Props extends TdHTMLAttributes<HTMLTableCellElement> {
   children: React.ReactNode;
-};
+}
 
-export const TableCell = ({ children }: Props) => {
+export const TableCell = ({ children, ...props }: Props) => {
   return (
-    <td className="p-4">
-      <Typography color="blue-gray" className="font-normal">
+    <td {...props} className={["p-4", props.className || ""].join(" ")}>
+      <Typography color="blue-gray" className="font-normal" as="div">
         {children}
       </Typography>
     </td>

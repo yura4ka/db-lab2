@@ -152,7 +152,6 @@ const ChangeDish: NextPage = () => {
               size="lg"
               label="Ресторан"
               value={form.restaurant.name}
-              key={form.restaurant.name}
               onChange={() => undefined}
               error={createDish.isError}
             >

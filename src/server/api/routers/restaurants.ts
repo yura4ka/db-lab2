@@ -13,9 +13,59 @@ const restaurantSchema = z.object({
   categories: z.array(validId),
 });
 
+type TRestaurant = Restaurant & {
+  dishCount: number;
+  reviewCount: number;
+  likedCount: number;
+};
+
+type TRestaurantRow = TRestaurant & { category: string };
+type TReturnRestaurant = TRestaurant & { categories: string[] };
+
 export const restaurantsRouter = createTRPCRouter({
-  get: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.$queryRaw<Restaurant[]>`SELECT * FROM "Restaurant";`;
+  get: publicProcedure.query(async ({ ctx }) => {
+    const result = await ctx.prisma.$queryRaw<TRestaurantRow[]>`
+      SELECT r.id as id, r.name as name, r.address as address,
+        r.website as website, r.description as description, r.price as price,
+        COUNT(DISTINCT d.id) as "dishCount", COUNT(DISTINCT rev.id) as "reviewCount", COUNT(DISTINCT lr.id) as "likedCount",
+        c.name as "category"
+      FROM "Restaurant" as r
+      LEFT JOIN "Dish" as d
+      ON r.id = d."restaurantId"
+      LEFT JOIN "Review" as rev
+      ON r.id = rev."restaurantId"
+      LEFT JOIN "LikedRestaurants" as lr
+      ON r.id = lr."restaurantId"
+      LEFT JOIN "RestaurantToCategory" as rtc
+      ON r.id = rtc."restaurantId"
+      LEFT JOIN "Category" as c
+      ON rtc."categoryId" = c.id
+      GROUP BY r.id, c.id
+      ORDER BY r.name;`;
+
+    const restaurants = new Map<number, TReturnRestaurant>();
+
+    for (const r of result) {
+      const c = restaurants.get(r.id);
+      if (c) {
+        c.categories.push(r.category);
+      } else {
+        restaurants.set(r.id, {
+          id: r.id,
+          name: r.name,
+          address: r.address,
+          website: r.website,
+          description: r.description,
+          price: r.price,
+          categories: [r.category],
+          dishCount: Number(r.dishCount),
+          reviewCount: Number(r.reviewCount),
+          likedCount: Number(r.likedCount),
+        });
+      }
+    }
+
+    return Array.from(restaurants.values());
   }),
   create: publicProcedure
     .input(restaurantSchema)

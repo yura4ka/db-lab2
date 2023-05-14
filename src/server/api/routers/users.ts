@@ -15,14 +15,15 @@ const userSchema = z.object({
 export const usersRouter = createTRPCRouter({
   get: publicProcedure.query(async ({ ctx }) => {
     const result = await ctx.prisma.$queryRaw<TCustomerFull[]>`
-      SELECT c.id, c.name, c.email, COUNT(r.id) AS "reviewCount", COUNT(l.id) AS "favoriteCount"
+      SELECT c.id, c.name, c.email, 
+        COUNT(DISTINCT r.id) AS "reviewCount", COUNT(DISTINCT l.id) AS "favoriteCount"
       FROM "Customer" as c
       LEFT JOIN "Review" as r
       ON c.id = r."customerId"
       LEFT JOIN "LikedRestaurants" as l
       ON c.id = l."customerId"
       GROUP BY c.id
-    `;
+      ORDER BY c.name;`;
     return result.map((r) => ({
       ...r,
       reviewCount: Number(r.reviewCount),

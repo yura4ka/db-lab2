@@ -5,7 +5,9 @@ import { validId, validString } from "~/utils/schemas";
 
 export const categoriesRouter = createTRPCRouter({
   get: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.$queryRaw<Category[]>`SELECT * FROM "Category";`;
+    return ctx.prisma.$queryRaw<Category[]>`
+      SELECT * FROM "Category"
+      ORDER BY name;`;
   }),
   create: publicProcedure
     .input(validString)

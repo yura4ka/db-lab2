@@ -55,6 +55,10 @@ const Restaurants: NextPage = () => {
             <HeadCell>Сайт</HeadCell>
             <HeadCell>Опис</HeadCell>
             <HeadCell>Ціна</HeadCell>
+            <HeadCell>Категорії</HeadCell>
+            <HeadCell>Кількість страв</HeadCell>
+            <HeadCell>Кількість відгуків</HeadCell>
+            <HeadCell>Кількість лайків</HeadCell>
             <HeadCell>Дії</HeadCell>
           </tr>
         </thead>
@@ -69,7 +73,7 @@ const Restaurants: NextPage = () => {
                 </Typography>
               </TableCell>
               <TableCell className="max-w-md">
-                <p className="line-clamp-2">{r.description}</p>
+                <p className="line-clamp-3">{r.description}</p>
               </TableCell>
               <TableCell>
                 <Rating
@@ -80,6 +84,10 @@ const Restaurants: NextPage = () => {
                   unratedIcon={<Unrated className="h-6 w-6" />}
                 />
               </TableCell>
+              <TableCell>{r.categories.join(", ")}</TableCell>
+              <TableCell>{r.dishCount}</TableCell>
+              <TableCell>{r.reviewCount}</TableCell>
+              <TableCell>{r.likedCount}</TableCell>
               <TableCell>
                 <EditRow href={`restaurants/${r.id}`} content="Редагувати" />
                 <RemoveRow

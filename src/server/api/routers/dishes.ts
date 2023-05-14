@@ -43,7 +43,8 @@ export const dishesRouter = createTRPCRouter({
       INNER JOIN "Category" as c
       ON d."categoryId" = c.id
       INNER JOIN "Restaurant" as r
-      ON d."restaurantId" = r.id`;
+      ON d."restaurantId" = r.id
+      ORDER BY r.name, d.name`;
     return result.map((r) => formatDishResult(r));
   }),
   create: publicProcedure.input(dishSchema).mutation(async ({ ctx, input }) => {

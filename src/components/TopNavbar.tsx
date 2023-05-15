@@ -76,6 +76,19 @@ function NavList() {
           Користувачі
         </Link>
       </Typography>
+      <Typography
+        as="li"
+        variant="small"
+        color="blue-gray"
+        className="p-1 font-medium"
+      >
+        <Link
+          href="/reviews"
+          className="flex items-center transition-colors hover:text-blue-500"
+        >
+          Відгуки
+        </Link>
+      </Typography>
     </ul>
   );
 }

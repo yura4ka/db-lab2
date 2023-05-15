@@ -92,10 +92,8 @@ const ChangeRestaurant: NextPage = () => {
     if (isCreate)
       createRestaurant.mutate(data, {
         onSuccess: (newId) => {
-          apiUtils.restaurants.get.setData(undefined, (old) =>
-            old ? [...old, { id: newId, ...data }] : old
-          );
           setForm(initialRestaurant);
+          void apiUtils.restaurants.get.invalidate(undefined);
           void push(`${newId}?created=true`);
         },
       });
@@ -103,11 +101,7 @@ const ChangeRestaurant: NextPage = () => {
       updateRestaurant.mutate(
         { id, ...data },
         {
-          onSuccess: () => {
-            apiUtils.restaurants.get.setData(undefined, (old) =>
-              old ? old.map((r) => (r.id === id ? { ...r, ...data } : r)) : old
-            );
-          },
+          onSuccess: () => void apiUtils.restaurants.get.invalidate(undefined),
         }
       );
   };

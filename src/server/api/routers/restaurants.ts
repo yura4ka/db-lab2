@@ -1,15 +1,15 @@
-import { Prisma, type Restaurant } from "@prisma/client";
+import { Prisma, type Dish, type Restaurant } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { validId, validString, validUrl } from "~/utils/schemas";
+import { validId, validScore, validString, validUrl } from "~/utils/schemas";
 
 const restaurantSchema = z.object({
   name: validString,
   address: validString,
   website: validUrl,
   description: validString,
-  price: z.number().positive(),
+  price: validScore,
   categories: z.array(validId),
 });
 
@@ -145,5 +145,11 @@ export const restaurantsRouter = createTRPCRouter({
       price: r.price,
       categories,
     };
+  }),
+
+  getDishes: publicProcedure.input(validId).query(({ ctx, input: id }) => {
+    return ctx.prisma.$queryRaw<Dish[]>`
+      SELECT * FROM "Dish"
+      WHERE "restaurantId" = ${id};`;
   }),
 });

@@ -1,4 +1,4 @@
-import { PlusIcon, StarIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, StarIcon, PencilIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardBody,
@@ -38,13 +38,20 @@ const Reviews: NextPage = () => {
         {reviews.map((r) => (
           <Card key={r.id} className="w-[48rem]">
             <CardBody>
-              <Typography
-                variant="h4"
-                color="blue-gray"
-                className="font-medium"
-              >
-                {r.restaurant}
-              </Typography>
+              <div className="flex items-center justify-between">
+                <Typography
+                  variant="h4"
+                  color="blue-gray"
+                  className="font-medium"
+                >
+                  {r.restaurant}
+                </Typography>
+                <Link href={`reviews/${r.id}`}>
+                  <IconButton size="sm" variant="text">
+                    <PencilIcon className="h-4 w-4" />
+                  </IconButton>
+                </Link>
+              </div>
               <Rating value={r.score} readonly={true} className="mb-3 mt-1" />
               <Typography color="gray">{r.text}</Typography>
 

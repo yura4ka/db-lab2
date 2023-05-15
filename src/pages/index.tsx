@@ -50,8 +50,8 @@ const Home: NextPage = () => {
         <HomeCard
           label="Огляди"
           links={[
-            { text: "Список", href: "review" },
-            { text: "Створити", href: "review/create" },
+            { text: "Список", href: "reviews" },
+            { text: "Створити", href: "reviews/create" },
           ]}
         />
         <HomeCard label="Запити" links={[]} />

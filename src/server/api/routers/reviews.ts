@@ -92,7 +92,6 @@ export const reviewRouter = createTRPCRouter({
           INSERT INTO "Review" (text, score, "restaurantId", "customerId")
           VALUES (${input.text}, ${input.score}, ${input.restaurantId}, ${input.customerId})
           RETURNING id;`;
-        console.log("created review", id);
         await tx.$executeRaw(Prisma.sql`
           INSERT INTO "DishReview" ("reviewId" ,"dishId", score, comment)
           VALUES ${Prisma.join(

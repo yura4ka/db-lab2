@@ -1,4 +1,13 @@
-import { Button, Card, Spinner, Typography } from "@material-tailwind/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+  Button,
+  Card,
+  IconButton,
+  Select,
+  Spinner,
+  Typography,
+  Option,
+} from "@material-tailwind/react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
@@ -12,6 +21,7 @@ import { validEmail, validString } from "~/utils/schemas";
 const initialUser = {
   name: "",
   email: "",
+  likedRestaurants: [] as { id: number; name: string }[],
 };
 
 const ChangeUser: NextPage = () => {
@@ -26,6 +36,7 @@ const ChangeUser: NextPage = () => {
   );
 
   const { data: users, isLoading } = api.users.get.useQuery();
+  const { data: restaurants } = api.restaurants.get.useQuery();
   const createUser = api.users.create.useMutation();
   const updateUser = api.users.update.useMutation();
   const apiUtils = api.useContext();
@@ -44,7 +55,9 @@ const ChangeUser: NextPage = () => {
         (v) =>
           (typeof v === "string" && v.trim().length !== 0) ||
           typeof v !== "string"
-      ) && Object.values(isError).every((e) => e === false)
+      ) &&
+      Object.values(isError).every((e) => e === false) &&
+      form.likedRestaurants.every((l) => l.id > 0)
     );
   };
 
@@ -62,6 +75,7 @@ const ChangeUser: NextPage = () => {
     const data = {
       name: form.name.trim(),
       email: form.email.trim(),
+      likedRestaurants: form.likedRestaurants.map((l) => l.id),
     };
 
     if (isCreate)
@@ -92,7 +106,7 @@ const ChangeUser: NextPage = () => {
       );
   };
 
-  if ((isCurrentLoading && !isCreate) || isLoading)
+  if ((isCurrentLoading && !isCreate) || isLoading || !restaurants)
     return <Spinner className="h-12 w-12" />;
 
   return (
@@ -140,6 +154,76 @@ const ChangeUser: NextPage = () => {
               }
               isError={createUser.isError}
             />
+
+            <div className="-mt-1 mb-2">
+              <Button
+                variant="outlined"
+                size="sm"
+                onClick={() =>
+                  setValue("likedRestaurants", [
+                    {
+                      id: -(form.likedRestaurants.length + 1),
+                      name: "",
+                    },
+                    ...form.likedRestaurants,
+                  ])
+                }
+              >
+                Додати улюблений ресторан
+              </Button>
+              <div className="my-4 grid gap-4">
+                {form.likedRestaurants.map((l) => (
+                  <div
+                    key={l.id}
+                    className="flex items-center justify-between gap-1"
+                  >
+                    <Select
+                      label="Ресторан"
+                      value={l.name}
+                      onChange={() => undefined}
+                      error={createUser.isError}
+                    >
+                      {restaurants.map((option) => (
+                        <Option
+                          key={option.id}
+                          value={option.name}
+                          onClick={() =>
+                            setValue(
+                              "likedRestaurants",
+                              form.likedRestaurants.map((lr) =>
+                                lr.id === l.id
+                                  ? { id: option.id, name: option.name }
+                                  : lr
+                              )
+                            )
+                          }
+                          disabled={
+                            !!form.likedRestaurants.find(
+                              (lr) => lr.id === option.id
+                            )
+                          }
+                        >
+                          {option.name}
+                        </Option>
+                      ))}
+                    </Select>
+                    <IconButton
+                      color="red"
+                      variant="text"
+                      size="sm"
+                      onClick={() =>
+                        setValue(
+                          "likedRestaurants",
+                          form.likedRestaurants.filter((r) => l.id !== r.id)
+                        )
+                      }
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </IconButton>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <Button

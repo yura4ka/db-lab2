@@ -1,4 +1,9 @@
-import { PlusIcon, StarIcon, PencilIcon } from "@heroicons/react/24/solid";
+import {
+  PlusIcon,
+  StarIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 import {
   Card,
   CardBody,
@@ -12,10 +17,25 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import MainHeader from "~/components/MainHeader";
+import { useModal } from "~/components/modal";
+import ConfirmModal from "~/components/modal/ConfirmModal";
 import { api } from "~/utils/api";
 
 const Reviews: NextPage = () => {
   const { data: reviews } = api.reviews.get.useQuery();
+  const removeReview = api.reviews.remove.useMutation();
+  const { modalProps, toggleModal } = useModal();
+  const apiUtils = api.useContext();
+
+  const handleRemove = (id: number) => {
+    removeReview.mutate(id, {
+      onSuccess: () => {
+        apiUtils.reviews.get.setData(undefined, (old) =>
+          old ? old.filter((r) => r.id !== id) : old
+        );
+      },
+    });
+  };
 
   if (!reviews) return <Spinner className="h-12 w-12" />;
 
@@ -46,11 +66,26 @@ const Reviews: NextPage = () => {
                 >
                   {r.restaurant}
                 </Typography>
-                <Link href={`reviews/${r.id}`}>
-                  <IconButton size="sm" variant="text">
-                    <PencilIcon className="h-4 w-4" />
+                <div>
+                  <Link href={`reviews/${r.id}`}>
+                    <IconButton size="sm" variant="text">
+                      <PencilIcon className="h-4 w-4" />
+                    </IconButton>
+                  </Link>
+                  <IconButton
+                    size="sm"
+                    variant="text"
+                    color="red"
+                    onClick={() =>
+                      toggleModal({
+                        text: `видалити цей відгук`,
+                        onConfirm: () => handleRemove(r.id),
+                      })
+                    }
+                  >
+                    <TrashIcon className="h-4 w-4" />
                   </IconButton>
-                </Link>
+                </div>
               </div>
               <Rating value={r.score} readonly={true} className="mb-3 mt-1" />
               <Typography color="gray">{r.text}</Typography>
@@ -99,6 +134,7 @@ const Reviews: NextPage = () => {
           </Card>
         ))}
       </div>
+      <ConfirmModal {...modalProps} />
     </>
   );
 };

@@ -1,6 +1,7 @@
 import { Typography } from "@material-tailwind/react";
 import { type NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import HomeCard from "~/components/HomeCard";
 
 const Home: NextPage = () => {
@@ -54,7 +55,15 @@ const Home: NextPage = () => {
             { text: "Створити", href: "reviews/create" },
           ]}
         />
-        <HomeCard label="Запити" links={[]} />
+      </div>
+      <div className="pt-6">
+        <Typography variant="h4">Запити:</Typography>
+        <Link href="queries/1">
+          <Typography color="blue" className="hover:text-blue-700">
+            1. Знайти назви тих ресторанів, у яких середня оцінка страв з
+            категорії X більша ніж Y.
+          </Typography>
+        </Link>
       </div>
     </>
   );

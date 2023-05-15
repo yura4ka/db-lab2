@@ -64,6 +64,12 @@ const Home: NextPage = () => {
             категорії X більша ніж Y.
           </Typography>
         </Link>
+        <Link href="queries/2">
+          <Typography color="blue" className="hover:text-blue-700">
+            2. Знайти користувачів у яких улюблені ресторани складаються з тих,
+            що мають категорію X.
+          </Typography>
+        </Link>
       </div>
     </>
   );

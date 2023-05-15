@@ -21,4 +21,20 @@ export const queriesRouter = createTRPCRouter({
         GROUP BY r.name
         HAVING AVG(dr.score) >= ${input.score};`;
     }),
+  second: publicProcedure
+    .input(validString)
+    .mutation(({ ctx, input: category }) => {
+      return ctx.prisma.$queryRaw<{ name: string; email: string }[]>`
+        SELECT DISTINCT c.email, c.name
+        FROM "Customer" as c
+        LEFT JOIN "LikedRestaurants" as l
+        ON c.id = l."customerId"
+        LEFT JOIN "Restaurant" as r
+        ON l."restaurantId" = r.id
+        LEFT JOIN "RestaurantToCategory" as rc
+        ON r.id = rc."restaurantId"
+        LEFT JOIN "Category" as cg
+        ON rc."categoryId" = cg.id
+        WHERE cg.name = ${category};`;
+    }),
 });

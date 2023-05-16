@@ -82,6 +82,12 @@ const Home: NextPage = () => {
             що й ресторан з назвою X.
           </Typography>
         </Link>
+        <Link href="queries/5">
+          <Typography color="blue" className="hover:text-blue-700">
+            5. Знайти користувачів, що поставили відгуки на страви з кожної
+            категорії.
+          </Typography>
+        </Link>
       </div>
     </>
   );

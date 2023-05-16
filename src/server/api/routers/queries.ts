@@ -88,4 +88,21 @@ export const queriesRouter = createTRPCRouter({
           ON r4.id = rtc4."restaurantId"
           WHERE r4.name = ${restaurant});`;
     }),
+  fifth: publicProcedure.mutation(({ ctx }) => {
+    return ctx.prisma.$queryRaw<{ name: string; email: string }[]>`
+      SELECT c.name, c.email
+      FROM "Customer" as c
+      LEFT JOIN "Review" as r
+      ON c.id = r."customerId"
+      LEFT JOIN "DishReview" as dr
+      ON r.id = dr."reviewId"
+      LEFT JOIN "Dish" as d
+      ON dr."dishId" = d.id
+      GROUP BY c.name, c.email
+      HAVING COUNT(DISTINCT d."categoryId") = 
+        (
+          SELECT COUNT (ctg.id)
+          FROM "Category" as ctg
+        );`;
+  }),
 });

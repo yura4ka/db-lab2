@@ -70,6 +70,12 @@ const Home: NextPage = () => {
             що мають категорію X.
           </Typography>
         </Link>
+        <Link href="queries/3">
+          <Typography color="blue" className="hover:text-blue-700">
+            3. Знайти назви тих ресторанів, що мають принаймні ті ж категорії,
+            що й ресторан з назвою X.
+          </Typography>
+        </Link>
       </div>
     </>
   );

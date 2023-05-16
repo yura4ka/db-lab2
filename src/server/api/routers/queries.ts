@@ -60,4 +60,32 @@ export const queriesRouter = createTRPCRouter({
             WHERE r3.name = ${restaurant}
         );`;
     }),
+  fourth: publicProcedure
+    .input(validString)
+    .mutation(({ ctx, input: restaurant }) => {
+      return ctx.prisma.$queryRaw<{ name: string }[]>`
+        SELECT DISTINCT r.name
+        FROM "Restaurant" as r
+        INNER JOIN "RestaurantToCategory" as rtc
+        ON r.id = rtc."restaurantId"
+        GROUP BY r.name
+        HAVING COUNT(rtc.id) = (
+          SELECT COUNT(rtc2.id)
+          FROM "Restaurant" as r2 
+          INNER JOIN "RestaurantToCategory" as rtc2
+          ON r2.id = rtc2."restaurantId"
+          WHERE r2.name = ${restaurant}
+        )
+        INTERSECT
+        SELECT DISTINCT r3.name
+        FROM "Restaurant" as r3
+        INNER JOIN "RestaurantToCategory" as rtc3
+        ON r3.id = rtc3."restaurantId"
+        WHERE rtc3."categoryId" IN
+          (SELECT rtc4."categoryId" 
+          FROM "Restaurant" as r4
+          INNER JOIN "RestaurantToCategory" as rtc4
+          ON r4.id = rtc4."restaurantId"
+          WHERE r4.name = ${restaurant});`;
+    }),
 });

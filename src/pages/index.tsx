@@ -76,6 +76,12 @@ const Home: NextPage = () => {
             що й ресторан з назвою X.
           </Typography>
         </Link>
+        <Link href="queries/4">
+          <Typography color="blue" className="hover:text-blue-700">
+            4. Знайти назви тих ресторанів, що мають ті й тільки ті категорії,
+            що й ресторан з назвою X.
+          </Typography>
+        </Link>
       </div>
     </>
   );

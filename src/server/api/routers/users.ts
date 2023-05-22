@@ -81,9 +81,9 @@ export const usersRouter = createTRPCRouter({
     const rows = await ctx.prisma.$queryRaw<TCustomerRow[]>`
       SELECT c.name, c.email, r.id as "likedId", r.name as "likedName"
       FROM "Customer" as c
-      INNER JOIN "LikedRestaurants" as l
+      LEFT JOIN "LikedRestaurants" as l
       ON c.id = l."customerId"
-      INNER JOIN "Restaurant" as r
+      LEFT JOIN "Restaurant" as r
       ON l."restaurantId" = r.id
       WHERE c.id = ${id};`;
 
@@ -92,6 +92,8 @@ export const usersRouter = createTRPCRouter({
       if (r.likedId && r.likedName)
         likedRestaurants.push({ id: r.likedId, name: r.likedName });
     }
+
+    console.log(rows);
 
     const row = rows[0];
     if (!row) throw new TRPCError({ code: "BAD_REQUEST" });

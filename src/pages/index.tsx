@@ -72,19 +72,19 @@ const Home: NextPage = () => {
         </Link>
         <Link href="queries/3">
           <Typography color="blue" className="hover:text-blue-700">
-            3. Знайти назви тих ресторанів, що мають принаймні ті ж категорії,
+            3*. Знайти назви тих ресторанів, що мають принаймні ті ж категорії,
             що й ресторан з назвою X.
           </Typography>
         </Link>
         <Link href="queries/4">
           <Typography color="blue" className="hover:text-blue-700">
-            4. Знайти назви тих ресторанів, що мають ті й тільки ті категорії,
+            4*. Знайти назви тих ресторанів, що мають ті й тільки ті категорії,
             що й ресторан з назвою X.
           </Typography>
         </Link>
         <Link href="queries/5">
           <Typography color="blue" className="hover:text-blue-700">
-            5. Знайти користувачів, що поставили відгуки на страви з кожної
+            5*. Знайти користувачів, що поставили відгуки на страви з кожної
             категорії.
           </Typography>
         </Link>

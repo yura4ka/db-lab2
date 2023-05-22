@@ -68,25 +68,47 @@ export const queriesRouter = createTRPCRouter({
         FROM "Restaurant" as r
         INNER JOIN "RestaurantToCategory" as rtc
         ON r.id = rtc."restaurantId"
-        GROUP BY r.name
+        GROUP BY r.id
         HAVING COUNT(rtc.id) = (
-          SELECT COUNT(rtc2.id)
-          FROM "Restaurant" as r2 
-          INNER JOIN "RestaurantToCategory" as rtc2
-          ON r2.id = rtc2."restaurantId"
-          WHERE r2.name = ${restaurant}
-        )
-        INTERSECT
-        SELECT DISTINCT r3.name
-        FROM "Restaurant" as r3
-        INNER JOIN "RestaurantToCategory" as rtc3
-        ON r3.id = rtc3."restaurantId"
-        WHERE rtc3."categoryId" IN
-          (SELECT rtc4."categoryId" 
-          FROM "Restaurant" as r4
-          INNER JOIN "RestaurantToCategory" as rtc4
-          ON r4.id = rtc4."restaurantId"
-          WHERE r4.name = ${restaurant});`;
+          SELECT COUNT(rtc3.id)
+          FROM "Restaurant" as r3
+          INNER JOIN "RestaurantToCategory" as rtc3
+          ON r3.id = rtc3."restaurantId"
+          WHERE r3.name = ${restaurant}
+        ) AND r.id NOT IN (
+          SELECT rtc2."restaurantId"
+          FROM "RestaurantToCategory" as rtc2
+          WHERE rtc2."categoryId" NOT IN (
+            SELECT rtc3."categoryId"
+            FROM "Restaurant" as r3 
+            INNER JOIN "RestaurantToCategory" as rtc3
+            ON r3.id = rtc3."restaurantId"
+            WHERE r3.name = ${restaurant}
+          )
+        );`;
+      ` -- SELECT DISTINCT r.name
+        -- FROM "Restaurant" as r
+        -- INNER JOIN "RestaurantToCategory" as rtc
+        -- ON r.id = rtc."restaurantId"
+        -- GROUP BY r.name
+        -- HAVING COUNT(rtc.id) = (
+        --   SELECT COUNT(rtc2.id)
+        --   FROM "Restaurant" as r2 
+        --   INNER JOIN "RestaurantToCategory" as rtc2
+        --   ON r2.id = rtc2."restaurantId"
+        --   WHERE r2.name = ${restaurant}
+        -- )
+        -- INTERSECT
+        -- SELECT DISTINCT r3.name
+        -- FROM "Restaurant" as r3
+        -- INNER JOIN "RestaurantToCategory" as rtc3
+        -- ON r3.id = rtc3."restaurantId"
+        -- WHERE rtc3."categoryId" IN
+        --   (SELECT rtc4."categoryId" 
+        --   FROM "Restaurant" as r4
+        --   INNER JOIN "RestaurantToCategory" as rtc4
+        --   ON r4.id = rtc4."restaurantId"
+        --   WHERE r4.name = ${restaurant});`;
     }),
   fifth: publicProcedure.mutation(({ ctx }) => {
     return ctx.prisma.$queryRaw<{ name: string; email: string }[]>`

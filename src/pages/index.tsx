@@ -98,7 +98,7 @@ const Home: NextPage = () => {
             7. Знайти користувачів, у яких середній бал відгуків менший за X.
           </Typography>
         </Link>
-        <Link href="queries/7">
+        <Link href="queries/8">
           <Typography color="blue" className="hover:text-blue-700">
             8. Знайдіть страви категорії X, у яких ресторан має середню оцінку
             більшу за Y.

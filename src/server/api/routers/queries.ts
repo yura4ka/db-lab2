@@ -161,4 +161,18 @@ export const queriesRouter = createTRPCRouter({
         GROUP BY c.id
         HAVING AVG(CAST(r.score as FLOAT)) <= ${score};`;
     }),
+  eighth: publicProcedure
+    .input(z.object({ categoryId: validId, score: z.number().positive() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.$queryRaw<{ name: string; restaurant: string }[]>`
+        SELECT DISTINCT d.name, r.name as restaurant
+        FROM "Dish" as d
+        LEFT JOIN "Restaurant" as r
+        ON d."restaurantId" = r.id
+        LEFT JOIN "Review" as rev
+        ON r.id = rev."restaurantId"
+        WHERE d."categoryId" = ${input.categoryId}
+        GROUP BY d.id, r.name
+        HAVING AVG(CAST(rev.score as FLOAT)) >= ${input.score};`;
+    }),
 });

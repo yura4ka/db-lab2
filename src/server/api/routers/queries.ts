@@ -150,4 +150,15 @@ export const queriesRouter = createTRPCRouter({
         ORDER BY d.price
         LIMIT 1;`;
     }),
+  seventh: publicProcedure
+    .input(z.number().positive())
+    .mutation(({ ctx, input: score }) => {
+      return ctx.prisma.$queryRaw<{ name: string; email: string }[]>`
+        SELECT c.name, c.email
+        FROM "Customer" as c
+        LEFT JOIN "Review" as r
+        ON c.id = r."customerId"
+        GROUP BY c.id
+        HAVING AVG(CAST(r.score as FLOAT)) <= ${score};`;
+    }),
 });

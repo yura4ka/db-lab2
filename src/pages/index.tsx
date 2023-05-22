@@ -66,8 +66,8 @@ const Home: NextPage = () => {
         </Link>
         <Link href="queries/2">
           <Typography color="blue" className="hover:text-blue-700">
-            2. Знайти користувачів у яких улюблені ресторани складаються з тих,
-            що мають категорію X.
+            2. Знайти користувачів у яких улюблені ресторани містять категорію
+            X.
           </Typography>
         </Link>
         <Link href="queries/3">
@@ -86,6 +86,11 @@ const Home: NextPage = () => {
           <Typography color="blue" className="hover:text-blue-700">
             5*. Знайти користувачів, що поставили відгуки на страви з кожної
             категорії.
+          </Typography>
+        </Link>
+        <Link href="queries/6">
+          <Typography color="blue" className="hover:text-blue-700">
+            6. Знайти найдешевшу страву категорії X, у якої оцінка більша за Y.
           </Typography>
         </Link>
       </div>

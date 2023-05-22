@@ -13,17 +13,17 @@ import MainHeader from "~/components/MainHeader";
 import { HeadCell, Table, TableCell } from "~/components/table";
 import { api } from "~/utils/api";
 
-const Query1: NextPage = () => {
+const Query6: NextPage = () => {
   const { data: categories } = api.categories.get.useQuery();
 
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(() => ({ id: -1, name: "" }));
   const [score, setScore] = useState(0);
 
-  const request = api.queries.first.useMutation();
+  const request = api.queries.sixth.useMutation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    request.mutate({ category, score });
+    request.mutate({ categoryId: category.id, score });
   };
 
   if (!categories) return <Spinner className="h-12 w-12" />;
@@ -31,14 +31,13 @@ const Query1: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Запит 1</title>
+        <title>Запит 6</title>
       </Head>
-      <MainHeader>Запит 1</MainHeader>
+      <MainHeader>Запит 6</MainHeader>
 
       <div>
         <Typography variant="h4" className="font-normal" color="blue-gray">
-          Знайти назви тих ресторанів, у яких середня оцінка страв з категорії X
-          більша ніж Y.
+          Знайти найдешевшу страву категорії X, у якої оцінка більша за Y.
         </Typography>
         <form
           onSubmit={handleSubmit}
@@ -47,11 +46,15 @@ const Query1: NextPage = () => {
           <Select
             size="lg"
             label="Категорія"
-            value={category}
-            onChange={(value) => setCategory(value || "")}
+            value={category.name}
+            onChange={() => undefined}
           >
             {(categories || []).map((c) => (
-              <Option key={c.id} value={c.name}>
+              <Option
+                key={c.id}
+                value={c.name}
+                onClick={() => setCategory({ id: c.id, name: c.name })}
+              >
                 {c.name}
               </Option>
             ))}
@@ -67,7 +70,9 @@ const Query1: NextPage = () => {
           <Button
             type="submit"
             fullWidth={true}
-            disabled={category === "" || score === 0}
+            disabled={
+              category.id <= 0 || category.name.trim() === "" || score === 0
+            }
           >
             Отримати
           </Button>
@@ -80,13 +85,19 @@ const Query1: NextPage = () => {
               <Table>
                 <thead>
                   <tr>
-                    <HeadCell>Назва</HeadCell>
+                    <HeadCell>Ресторан</HeadCell>
+                    <HeadCell>Страва</HeadCell>
+                    <HeadCell>Ціна</HeadCell>
+                    <HeadCell>Середня оцінка</HeadCell>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {request.data.map((r) => (
                     <tr key={r.name}>
+                      <TableCell>{r.restaurant}</TableCell>
                       <TableCell>{r.name}</TableCell>
+                      <TableCell>${r.price}</TableCell>
+                      <TableCell>{r.score}</TableCell>
                     </tr>
                   ))}
                 </tbody>
@@ -99,4 +110,4 @@ const Query1: NextPage = () => {
   );
 };
 
-export default Query1;
+export default Query6;

@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { validString } from "~/utils/schemas";
+import { validId, validString } from "~/utils/schemas";
+
+type TSixQuery = {
+  name: string;
+  price: number;
+  restaurant: string;
+  score: number;
+};
 
 export const queriesRouter = createTRPCRouter({
   first: publicProcedure
@@ -19,7 +26,7 @@ export const queriesRouter = createTRPCRouter({
         ON d."categoryId" = c.id
         WHERE c.name = ${input.category}
         GROUP BY r.name
-        HAVING AVG(dr.score) >= ${input.score};`;
+        HAVING AVG(CAST(dr.score as FLOAT)) >= ${input.score};`;
     }),
   second: publicProcedure
     .input(validString)
@@ -127,4 +134,20 @@ export const queriesRouter = createTRPCRouter({
           FROM "Category" as ctg
         );`;
   }),
+  sixth: publicProcedure
+    .input(z.object({ categoryId: validId, score: z.number().positive() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.$queryRaw<TSixQuery[]>`
+        SELECT d.name, d.price, r.name as "restaurant", AVG(CAST(dr.score as FLOAT)) as score
+        FROM "Dish" as d
+        LEFT JOIN "DishReview" as dr
+        ON d.id = dr."dishId"
+        LEFT JOIN "Restaurant" as r
+        ON d."restaurantId" = r.id
+        WHERE d."categoryId" = ${input.categoryId}
+        GROUP BY r.name, d.id
+        HAVING AVG(CAST(dr.score as FLOAT)) >= ${input.score}
+        ORDER BY d.price
+        LIMIT 1;`;
+    }),
 });

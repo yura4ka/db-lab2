@@ -35,8 +35,7 @@ const Query2: NextPage = () => {
 
       <div>
         <Typography variant="h4" className="font-normal" color="blue-gray">
-          Знайти користувачів у яких улюблені ресторани складаються з тих, що
-          мають категорію X.
+          Знайти користувачів у яких улюблені ресторани містять категорію X.
         </Typography>
         <form
           onSubmit={handleSubmit}
